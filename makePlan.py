@@ -31,7 +31,7 @@ Description:
       number of agents you specify (default: "lastPlan.pkl")
 
 Options:
-  -b         Make maps blue instead of green
+  -b         Make maps green instead of blue
   -n agents  Number of agents [default: 1]
 
 """
@@ -59,10 +59,10 @@ def main():
     BLUE  = '#2ABBFF'
     #GREEN = (0.0 , 1.0 , 0.0 , 0.3)
     #BLUE  = (0.0 , 0.0 , 1.0 , 0.3)
-    COLOR = GREEN
+    COLOR = BLUE
 
     if args['-b']:
-        COLOR = BLUE
+        COLOR = GREEN
 
     output_directory = ''
     if args['<output_directory>'] != None:
