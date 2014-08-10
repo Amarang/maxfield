@@ -3,7 +3,7 @@
 import json, sys
 
 def ascii(s):
-    return ''.join([c for c in s if ord(c) < 128])
+    return ''.join([c for c in s if (ord(c) < 128 and c != ',')])
 
 if len(sys.argv) < 2:
     print "usage: python ingress.py [input json file]"
