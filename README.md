@@ -30,9 +30,11 @@ This will put a bunch of files into the "out/" directory (see OUTPUT FILE LIST)
 
 Now try running
 
-    python makePlan.py 3 out/output.pkl
+    python makePlan.py -n 3 out/output.pkl
 
 This uses the plan stored in output.pkl instead of calculating a new one. It will create files for 3 agents instead of 4.
+
+#### Note that UCSBportals.csv has pre-parsed portal information for UCSB, IV, and Goleta
 
 ### OUTPUT FILE LIST
 
