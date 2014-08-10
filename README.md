@@ -24,7 +24,7 @@ You can use [pip][3] to install the dependencies via:
 
 I'll be distributing this code with a file EXAMPLE.csv. Try running
 
-    python makePlan.py 4 EXAMPLE.csv out/ output.pkl
+    python makePlan.py -n 4 EXAMPLE.csv out/ output.pkl
 
 This will put a bunch of files into the "out/" directory (see OUTPUT FILE LIST)
 
