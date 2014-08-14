@@ -218,8 +218,8 @@ def main():
     PP.agentLinks()
 
     # These make step-by-step instructional images
-    #PP.animate()
-    #PP.split3instruct()
+    # PP.animate()
+    # PP.split3instruct()
 
 if __name__ == "__main__":
     sys.exit(main())
