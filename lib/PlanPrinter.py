@@ -5,6 +5,7 @@ np = geometry.np
 import agentOrder
 import networkx as nx
 import electricSpring
+import tsp
 
 # returns the points in a shrunken toward their centroid
 def shrink(a):
@@ -52,6 +53,8 @@ class PlanPrinter:
         self.nameOrder = np.argsort(self.names)
 
         self.xy = np.array([self.a.node[i]['xy'] for i in xrange(self.n)])
+        # print self.xy
+        # print self.a.node[0]['xy']
 
         # The order from north to south (for easy-to-find labels)
         self.posOrder = np.argsort(self.xy,axis=0)[::-1,1]
@@ -67,13 +70,18 @@ class PlanPrinter:
         rowFormat = '{0:11d} | {1:6d} | {2}\n'
         with open(self.outputDir+'keyPrep.txt','w') as fout:
             fout.write( 'Keys Needed | Lacked |\n')
+            print "\nKeys to get:"
             for i in self.nameOrder:
                 keylack = max(self.a.in_degree(i)-self.a.node[i]['keys'],0)
+                if(keylack > 0): 
+                    print "%i | %s" % (keylack, self.names[i])
                 fout.write(rowFormat.format(\
                     self.a.in_degree(i),\
                     keylack,\
                     self.names[i]\
                 ))
+
+        print
 
         unused   = set(xrange(self.n))
         infirst  = []
@@ -252,6 +260,8 @@ class PlanPrinter:
         agentdists = np.zeros(self.nagents)
         # Total experience for each agent
         agentexps  = np.zeros(self.nagents,dtype=int)
+        agentfields  = np.zeros(self.nagents,dtype=int)
+
 
         for i in range(self.nagents):
             movie = self.movements[i]
@@ -265,6 +275,7 @@ class PlanPrinter:
                 curpos = newpos
 
                 agentexps[i] += 313 + 1250*len(self.a.edge[p][q]['fields'])
+                agentfields[i] += len(self.a.edge[p][q]['fields'])
 
         # Different formatting for the agent's own links
         plainStr = '{0:4d}{1:1s} {2: 5d}{3:5d} {4:s}\n            {5:4d} {6:s}\n\n'
@@ -283,6 +294,9 @@ class PlanPrinter:
 
                 fout.write('Agent distance:   %s m\n'%int(agentdists[agent]))
                 fout.write('Agent experience: %s AP\n'%(agentexps[agent]))
+                
+                print 'Agent fields: %s\n'%(agentfields[agent])
+                print 'Agent experience: %s AP\n'%(agentexps[agent])
 
                 fout.write('\nLinks marked with * can be made EARLY\n')
 
@@ -290,6 +304,9 @@ class PlanPrinter:
                 fout.write('                 Link Destination\n')
                 fout.write('-----------------------------------\n')
                 #             1234112345612345 name
+               
+                seqLinks = []
+                earlyLinks = []
                 
                 for i in xrange(self.m):
                     p,q = self.orderedEdges[i]
@@ -306,6 +323,12 @@ class PlanPrinter:
 #                        print '%s %s completes'%(p,q)
 #                        for t in self.a.edge[p][q]['fields']:
 #                            print '   ',t
+
+                    # print star, i, self.names[p], "-->", self.names[q]
+                    if(star == '*'):
+                        earlyLinks.append( [i, p, q] )
+                    else:
+                        seqLinks.append( [i, self.names[p], self.names[q]] )
 
                     if linkagent != agent:
                         fout.write(plainStr.format(\
@@ -327,6 +350,27 @@ class PlanPrinter:
                             self.nslabel[q],\
                             self.names[q]\
                         ))
+
+                earlyPointsToOpt = []
+                for i,point in enumerate(earlyLinks):
+                    p,q = point[1], point[2]
+                    x,y = self.xy[p][0], self.xy[p][1]
+                    earlyPointsToOpt.append( [i, float(x), float(y)] )
+
+                # print earlyPointsToOpt
+
+
+
+                costs, earlyPointsOptimized = tsp.simAnneal(earlyPointsToOpt) # NJA XXX
+                for point in earlyPointsOptimized:
+                    i,p,q = earlyLinks[point[0]]
+                    
+                    print '*', i, self.names[p], "-->", self.names[q]
+
+                for link in seqLinks:
+                    print ' ', link[0], link[1], "-->", link[2]
+
+
     def animate(self):
         # show or save a sequence of images demonstrating how the plan would unfold
         from matplotlib.patches import Polygon
