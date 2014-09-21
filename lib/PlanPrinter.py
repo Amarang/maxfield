@@ -358,6 +358,7 @@ class PlanPrinter:
                     earlyPointsToOpt.append( [i, float(x), float(y)] )
 
                 # print earlyPointsToOpt
+                print 'Agent distance:   %s m\n'%int(agentdists[agent])
 
 
 
